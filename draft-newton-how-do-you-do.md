@@ -36,7 +36,8 @@ Johnny Cash, a young man seeks out and identifies his long, astranged father
 using an old, worn photograph. Upon giving his name, the young man asks of
 his father, "how do you do?"
 
-This document describes a system to aid in the discovery of identifers for
+This document describes a system, HDYD for "how do you do",
+to aid in the discovery of identifers for
 natural persons while preserving their privacy. The system uses a publicly
 visible Bloom filter along with an exchange of messages between agents acting
 on behalf of users. When an agent suspects that another agent possesses the
@@ -79,5 +80,28 @@ exchange a series of messages to seek further confirmation of the identifiers us
 different hash values and/or stronger hash algorithms.
 
 # Functional Components
+
+The agents holding the hash values and conducting identity confirmation
+communications are known as Exchange Agents in HDYD. Users interact with
+User Agents. User Agents hold the identities of the user and the identities
+being sought by the user, and User Agents calculate the hash values for
+identities which are then placed into Exchange Agents.
+
+As the generation of hash values is the responsibility of the User Agent,
+but the Exchange Agent requires different or stronger hash values for
+identity confirmation, the communications between Exchange Agents for the
+purposes of identity confirmation is "asynchronous" and does not match 
+typical request/response patterns. That is, Exchange Agents will be
+required to retrieve new hash values to conduct identity confirmation using
+User Agents which may or may not be immediately accessible.
+
+For convenience and quicker exchanges, User Agents and Exchange Agents
+may be combined into one operating entity.  Conversely, there is no explicit 
+one-to-one match between User Agents and Exchange Agents. Exchange Agents 
+may server many User Agents, and User Agents may utilize more than one
+Exchange Agent.
+
+Finally, this document does not define the communications between User Agents
+and Exchange Agents.
 
 {backmatter}
