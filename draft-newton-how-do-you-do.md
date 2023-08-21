@@ -104,4 +104,96 @@ Exchange Agent.
 Finally, this document does not define the communications between User Agents
 and Exchange Agents.
 
+# Internet HTTP Protocol
+
+The following sections describe how HDYD is to work over the Internet
+using HTTP where Exchange Agents are accessible as publicly available
+resources.
+
+Exchange Agents communicate by issuing HTTP requests using the paths and
+query parameters defined in this document. They are configured to communicate
+with each other using a "base URL" upon which the request componets defined herein
+are then appended.
+
+## Use of HTTP Signatures
+
+Exchange Agents use HTTPS to communicate, and all but one HTTP exchange uses
+HTTP Signatures to sign requests. The exception is the HTTP GET request of
+a senders HTTP signing key.
+
+The keyId used in the HTTP signature MUST be an HTTPS URL, and the URL MUST
+resolve to a resource that is a PEM-encoded public key. Exchange Agents
+MAY cache keys according to HTTP caching headers.
+
+Both the Host and Date HTTP headers MUST be signed.
+
+> There is probably a need to specify the key types and signature algorithms
+> to use.
+
+## Requesting Values
+
+An Exchange Agent may request hash values from another agent using the `/hashes` path
+(i.e. <base URL>/hashes). This request may optionally have the `before` and `after`
+query parameters, the value of each being a string. These parameters are used
+to paginate the values in the request, where `before` is an indicator that only
+hash values created before its value are to be in the returned result, and `after`
+is an indicator that only hash value created after its value are to be in the
+returned result. The format for neither value is defined, and agents should use
+neither parameter to request the latest hash values.
+
+The hash values are returned as a JSON object with the following form:
+
+    {
+      "version": 1,
+      "next" : "abcdefg",
+      "prev" : "hijklmn",
+      "hash_values": [
+        {
+          "u32": 11112,
+          "alg": "FNV132",
+          "two_way": false,
+          "created": "20230102T12:59:00Z"
+        },
+        {
+          "u32": 2221,
+          "alg": "FNV132",
+          "two-way": true,
+          "created": "20230101T12:59:00Z"
+        },
+      ]
+    }
+
+The JSON members have the following meaning:
+
+* `version` - this is a simple integer and MUST be 1.
+* `next` - a string value which maybe used in subsequent requests as the `next` query parameter.
+* `prev` - a string avlue which maybe used in subsequent requests as teh `prev` query parameter.
+* `hash_values` - an array of JSON objects, each having:
+  * `u32` - an unsigned 32-bit integer that is the value of the hash.
+  * `alg` - the name of the hash algorithm.
+  * `two_way` - indicates that confirmation of the identity derived from the hash value requires two-way confirmation.
+  * `created` - an RFC 3339 data and time in UTC with no more than seconds resolution indicating when the hash value was placed in the Exchange Agent.
+
+If the `next` string is not given, this indicates there are no more hash values available using the `next` query parameter.
+If the `prev` string is not given, this indicates there are no more hash values available using the `prev` query parameter.
+All other values MUST be given, but the `hash_values` array MAY be empty.
+
 {backmatter}
+
+# Other Environments
+
+This document describes how HDYD works over the Internet by layering it over
+HTTP. However, there may be other environments where parts of HDYD can be used
+to achieve similar purposes. For example, the Activity Pub protocol and the
+conventions established around the Fediverse provide enough properties to
+to layer HDYD in Activity Pub itself, making the integration of HDYD more
+seemless with that ecosystem.
+
+Other environments, such as local area networks, may take parts of HDYD and
+use them with mDNS or Bluetooth to facilitate the discovery of Exchange Agents.
+The scenario being that a user with a smart phone containing both a User Agent 
+and Exchange Agent may be notified that an acquaintance is nearby using HDYD.
+
+# Acknowledgements
+
+A conversation had with libations and Eric Osterweil was the inspiration for HDYD.
