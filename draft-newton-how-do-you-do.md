@@ -447,6 +447,12 @@ conventions established around the Fediverse provide enough properties to
 to layer HDYD in Activity Pub itself, making the integration of HDYD more
 seemless with that ecosystem.
 
+NOSTR is another environment similar to the Fediverse but with different goals.
+NOSTR uses cryptographic public keys as user identifiers. HDYD could be used
+in NOSTR to map NOSTR public keys to email addresses and other user identifiers.
+Additionally, a binding of HDYD to the NOSTR protocol could make exchange of
+user identifiers more seamless in that environment.
+
 Other environments, such as local area networks, may take parts of HDYD and
 use them with mDNS or Bluetooth to facilitate the discovery of Exchange Agents.
 The scenario being that a user with a smart phone containing both a User Agent 
