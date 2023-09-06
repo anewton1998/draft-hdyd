@@ -1,7 +1,7 @@
 %%%
 Title = "How Do You Do"
 area = "Applications and Real-Time Area (ART)"
-workgroup = "Dispatch"
+workgroup = "Network Working Group"
 abbrev = "hdyd"
 ipr= "trust200902"
 
@@ -59,7 +59,7 @@ blog URL. Both Alice and Bob are using a hash algorithm with high a collision ra
 therefore the hash value 12345 may also be the hash value for another identifier
 probably unrelated to either Alice or Bob.
 
-Bob's agent obtains of list of hash values from Alice's agent, and discovers
+Bob's agent obtains the list of hash values from Alice's agent, and discovers
 that the hash value 12345 exists in both Bob's set and Alice's set.
 
 If Alice desires contact from all readers of her blog, even the ones whom
@@ -234,19 +234,21 @@ The keyId used in the HTTP signature MUST be an HTTPS URL, and the URL MUST
 resolve to a resource that is a PEM-encoded public key. Exchange Agents
 MAY cache keys according to HTTP caching headers.
 
-Both the Host and Date HTTP headers MUST be signed.
+Both the `host` and `date` HTTP headers MUST be signed, and the value of the `host` 
+header SHOULD be equivalent to the host of the authority component of the URL that
+is the value of the keyId (e.g. `host: foo.example` matches `https://foo.example/key.pem`).
 
 A> TODO: There is probably a need to specify the key types and signature algorithms
 A> to use.
 
-## JSON Vocabulary
+## JSON Vocabulary {#json_vocabulary}
 
 The messages described in the following section contain JSON. The meaning of these JSON values
 are:
 
 * `version` - this is a simple integer and MUST be 1.
 * `next` - a string value which maybe used in subsequent requests as the `next` query parameter.
-* `prev` - a string avlue which maybe used in subsequent requests as the `prev` query parameter.
+* `prev` - a string value which maybe used in subsequent requests as the `prev` query parameter.
 * `hash_values` - an array of JSON objects, each containing hashes.
 * `two_way` - indicates that confirmation of an identifier requires the two-way process.
 * `created` - an RFC 3339 data and time in UTC with no more than seconds resolution indicating when an associated item was placed in the Exchange Agent.
@@ -267,6 +269,7 @@ are:
 * `msg_content` - a string that is the message content.
 * `exchange_agents` - an array containg exchange agent location objects.
 * `agent_url` - a string containing a URL of an agent.
+* `notifications_accepted` - a boolean indicating if an Exchange Agent accepts notifications.
 
 
 ## Requesting Values {#values_request}
@@ -280,12 +283,13 @@ is an indicator that only hash value created after its value are to be in the
 returned result. The format for neither value is defined, and agents should omit
 the use of both parameter to request the latest values.
 
-The values are returned as a JSON object with the following form:
+The values are returned as a JSON object with the following form (see (#json_vocabulary)):
 
     {
       "version": 1,
       "next" : "abcdefg",
       "prev" : "hijklmn",
+      "notifications_accepted": true
       "hash_values": [
         {
           "uh1_u32": 11112,
@@ -313,7 +317,7 @@ If the requesting Exchange Agent finds a UH1 value matching one of its AH1 value
 ## One-Way Confirmation {#http_one_way}
 
 One-way confirmation begins with the REA sending an HTTP POST to the CEA at the path `/one_way` (i.e. <base URL>/one_way).
-The data posted is a JSON object of the form:
+The data posted is a JSON object of the form (see (#json_vocabulary)):
 
     {
       "version": 1,
@@ -325,7 +329,7 @@ The data posted is a JSON object of the form:
     }
 
 The CEA uses the UH1 value and the `created` value to reference a set of user identifier hashes (UH1, UH2, and UH3).
-If the UH2 value given matches the UH2 value in that set of hashes, the CEA responds with the UH3 in this form:
+If the UH2 value given matches the UH2 value in that set of hashes, the CEA responds with the UH3 in this form (see (#json_vocabulary)):
 
     {
       "version": 1,
@@ -341,7 +345,7 @@ If the UH2 value given matches the UH2 value in that set of hashes, the CEA resp
 
 If the REA can match this UH3 value to its corresponding value, then the REA may send a
 subsequent HTTP POST to the path `/one_way_msg` (i.e. <base URL>/one_way_msg) with data of
-the form:
+the form (see (#json_vocabulary)):
 
     {
       "version": 1,
@@ -361,7 +365,7 @@ the form:
 ## Two-Way Confirmation {#http_two_way}
 
 Two-way confirmation begins with the REA sending an HTTP POST to the CEA at the path `two_way_step1`
-(i.e. <base URL>/two_way_step1). The data posted is a JSON object of the form:
+(i.e. <base URL>/two_way_step1). The data posted is a JSON object of the form (see (#json_vocabulary)):
 
     {
       "version": 1,
@@ -376,7 +380,7 @@ If CEA allows two-way confirmation for the given UH1 and it has an AH1 associate
 it replys with a simple HTTP OK.
 
 If the REA receives an OK, it may continue by sending an HTTP POST to the CEA at the path
-`two_way_step3` (i.e. <base URL>/two_way_step3) (see step 3 in (#two_way)). The data posted is a JSON object of the form:
+`two_way_step3` (i.e. <base URL>/two_way_step3) (see step 3 in (#two_way)). The data posted is a JSON object of the form (see (#json_vocabulary)):
 
     {
       "version": 1,
@@ -391,7 +395,7 @@ If the REA receives an OK, it may continue by sending an HTTP POST to the CEA at
 
 If the CEA matches the given UH2 with its UH2 and `created` values, and the AH1 and AH2 values match
 to a set of AH1 and AH2 values associated with the user of UH2, then the CEA responds
-with a JSON object of the form:
+with a JSON object of the form (see (#json_vocabulary)):
 
     {
       "version": 1,
@@ -409,7 +413,7 @@ with a JSON object of the form:
 
 If the REA can match this UH3 value to its corresponding value, then the REA may send a
 subsequent HTTP POST to the path `/two_way_msg` (i.e. <base URL>/two_way_msg) with data of
-the form:
+the form (see (#json_vocabulary)):
 
     {
       "version": 1,
@@ -452,7 +456,7 @@ used for the CMS is either the UID or AID, or known to be associated with the UI
 
 A> TODO: This needs some more work, obviously.
 
-## Distribution
+## Distribution {#distribution}
 
 An Exchange Agent may request the locations of other agents from a known agent
 using the `/exchange_agents` path (i.e. <base URL>/exchange_agents). 
@@ -464,12 +468,13 @@ is an indicator that only agents created after its value are to be in the
 returned result. The format for neither value is defined, and agents should omit
 the use of both parameter to request the latest values.
 
-The values are returned as a JSON object with the following form:
+The values are returned as a JSON object with the following form (see (#json_vocabulary)):
 
     {
       "version": 1,
       "next" : "abcdefg",
       "prev" : "hijklmn",
+      "notifications_accepted": true
       "exchange_agents" : [
         {
           "agent_url": "https://agent1.example",
@@ -481,6 +486,46 @@ The values are returned as a JSON object with the following form:
         }
       ]
     }
+
+## Notifications {#notifications}
+
+Exchange Agents may provide each other with unsolicited notifications. An Exchange Agent
+indicates if it is willing to receive notifications using the `notifications_accepted` value
+found in the JSON messages of (#distribution) and (#values_request).
+
+Notifications are received using the `/notifications` path (i.e. <base URL/notifications) and
+have the following form (see (#json_vocabulary)):
+
+    {
+      "version": 1,
+      "hash_values": [
+        {
+          "uh1_u32": 11112,
+          "alg": "FNV132",
+          "two_way": false,
+          "created": "20230102T12:59:00Z"
+        },
+        {
+          "uh1_u32": 22221,
+          "alg": "FNV132",
+          "two-way": true,
+          "created": "20230101T12:59:00Z"
+        },
+      ],
+      "exchange_agents" : [
+        {
+          "agent_url": "https://agent1.example",
+          "created": "20230102T12:59:00Z"
+        },
+        {
+          "agent_url": "https://agent2.example",
+          "created": "20230101T12:59:00Z"
+        }
+      ]
+    }
+
+The `hash_values` array is the same as is used (#values_request) and the `exchange_agents` array
+is the same is used in (#distribution).
 
 # Security Considerations
 
