@@ -2,14 +2,14 @@
 Title = "How Do You Do"
 area = "Applications and Real-Time Area (ART)"
 workgroup = "Network Working Group"
-abbrev = "hdyd"
+abbrev = "howdy"
 ipr= "trust200902"
 
 [seriesInfo]
 name = "Internet-Draft"
-value = "draft-newton-how-do-you-do"
+value = "draft-newton-how-do-you-do-00"
 stream = "IETF"
-status = "standard"
+status = "experimental"
 date = 2023-08-22T00:00:00Z
 
 [[author]]
@@ -24,7 +24,7 @@ email = "andy@hxr.us"
 
 .# Abstract
 
-This document describes a system to discover the identifies of natural
+This document describes a system to discover the identifiers of natural
 persons while preserving their privacy.
 
 {mainmatter}
@@ -36,14 +36,14 @@ Johnny Cash, a young man seeks out and identifies his long, astranged father
 using an old, worn photograph. Upon finding his father, the young man gives his name
 and asks of his father, "how do you do?"
 
-This document describes a system, HDYD for "how do you do",
+This document describes a system, called "Howdy" which is short for "how do you do",
 to aid in the discovery of identifers for
 natural persons while preserving their privacy. The system uses a publicly
-visible Bloom filter along with an exchange of messages between agents acting
+visible [@!Bloom] filter along with an exchange of messages between agents acting
 on behalf of users. When an agent suspects that another agent possesses the
 identifier of a user, the agents may interrogate each other to either confirm
 or deny the suspicion. Upon confirmation, the agents notify their respective
-users so that the users my exchange other information, such as new or different
+users so that the users may exchange other information, such as new or different
 identifiers.
 
 Confirmation of identifiers can either be one-way or two-way. Consider the
@@ -83,7 +83,7 @@ different hash values and/or stronger hash algorithms.
 # Functional Components
 
 The agents holding the hash values and conducting identifier confirmation
-communications are known as Exchange Agents (EA) in HDYD. Users interact with
+communications are known as Exchange Agents (EA) in Howdy. Users interact with
 User Agents (UA). User Agents hold the identifiers of the user and the identifiers
 being sought by the user, and User Agents calculate the hash values for
 identifiers which are then placed into Exchange Agents.
@@ -107,11 +107,11 @@ Confirming | User Agent     | CUA
 Confirming | Exchange Agnet | CEA
 
 The identifier of a user is called a UID. For each UID, the UA calculates a hash value
-from the UID using a collision-prone hash algorithm such as FNV. This hash value is called
+from the UID using a collision-prone hash algorithm such as FNV (see [@!I-D.eastlake-fnv]). This hash value is called
 UH1.
 
 A second hash value, called UH2 is also calculated for each UID. This hash value uses a
-separate, different collision-prone hash algorithm such as Murmur.
+separate, different collision-prone hash algorithm such as Murmur (see [@!Murmur3]).
 
 Finally, for each UID a third hash value is also calculated. This value is called UH3 and is
 calculated with a hash algorithm that is collision-resistent such as SHA-256.
@@ -189,7 +189,7 @@ Step | Direction  | Summary
 These are the steps for two-way confirmation:
 
 *Step 1:* The REA sends a message containing a UH1 and AH1. As this is two-way confirmation,
-the AH1 is associated with an AID believed to be known by user identified by the UID.
+the AH1 is associated with an AID believed to be known by the user identified by the UID.
 
 *Step 2:* If the CEA can associate the AH1 with the UH1 
 (that is, the AID is associated with the UID), it responds with a simple positive acknowledgement of the match.
@@ -212,12 +212,22 @@ Step | Direction  | Summary
 4    | REA <- CEA | UH3 + AH3
 5    | REA -> CEA | AH3 + message
 
+# Identifier Canonicalization
+
+Some identifiers have extraneous characters that are insignificant to the usage of those
+identifiers. For such identifiers, User Agents MUST remove insignificant characters from those
+identifiers before creating hashes.
+
+For phone numbers, User Agents MUST remove all non-digit characters. For email addresses,
+the display name and any characters used to distinguish the display name from the email address
+must be removed (e.g. Bob \<bob@example.com\> should be bob@example.com).
+
 # Internet HTTP Binding
 
-The following sections describe a binding of HDYD to Internet
-HTTP where Exchange Agents are accessible as publicly available
+The following sections describe a binding of Howdy to Internet
+HTTP ([@!RFC9110]) where Exchange Agents are accessible as publicly available
 resources. (#other_environments) discusses other environments and
-deployment scenarios for HDYD.
+deployment scenarios for Howdy.
 
 Exchange Agents communicate by issuing HTTP requests using the paths and
 query parameters defined in this document. They are configured to communicate
@@ -227,7 +237,7 @@ are then appended.
 ## Use of HTTP Signatures
 
 Exchange Agents use HTTPS to communicate, and use
-HTTP Signatures to sign requests, with an exception being the HTTP GET request to
+HTTP Signatures [@!I-D.ietf-httpbis-message-signatures] to sign requests, with an exception being the HTTP GET request to
 fetch the HTTP signing key of a requester.
 
 The keyId used in the HTTP signature MUST be an HTTPS URL, and the URL MUST
@@ -266,11 +276,12 @@ are:
 * `ah3_alg` - the name of the hash algorithm used to generate AH3.
 * `msgs` - an array containing message objects.
 * `msg_type` - a string signifying the type of the message content.
-* `msg_content` - a string that is the message content.
+* `msg_content` - the JSON type of this value is dependent on the accompanying `msg_type` value.
 * `exchange_agents` - an array containg exchange agent location objects.
 * `agent_url` - a string containing a URL of an agent.
 * `notifications_accepted` - a boolean indicating if an Exchange Agent accepts notifications.
 
+A> TODO: specify an IANA registry of algorithms to use.
 
 ## Requesting Values {#values_request}
 
@@ -293,13 +304,13 @@ The values are returned as a JSON object with the following form (see (#json_voc
       "hash_values": [
         {
           "uh1_u32": 11112,
-          "alg": "FNV132",
+          "alg": "FNV",
           "two_way": false,
           "created": "20230102T12:59:00Z"
         },
         {
           "uh1_u32": 22221,
-          "alg": "FNV132",
+          "alg": "FNV",
           "two-way": true,
           "created": "20230101T12:59:00Z"
         },
@@ -322,7 +333,7 @@ The data posted is a JSON object of the form (see (#json_vocabulary)):
     {
       "version": 1,
       "uh1_u32": 11112,
-      "uh1_alg": "FNV132",
+      "uh1_alg": "FNV",
       "created": "20230102T12:59:00Z",
       "uh2_u32": 44443,
       "uh2_alg": "Murmur3"
@@ -350,7 +361,7 @@ the form (see (#json_vocabulary)):
     {
       "version": 1,
       "uh1_u32": 11112,
-      "uh1_alg": "FNV132",
+      "uh1_alg": "FNV",
       "created": "20230102T12:59:00Z",
       "uh3_base64": "b6fb35773416f37e51eb893a0b0682e23b4f758d5004542450be61607253f899",
       "uh3_alg": "SHA-256",
@@ -370,10 +381,10 @@ Two-way confirmation begins with the REA sending an HTTP POST to the CEA at the 
     {
       "version": 1,
       "uh1_u32": 22221,
-      "uh1_alg": "FNV132",
+      "uh1_alg": "FNV",
       "created": "20230102T12:59:00Z",
       "ah1_u32": 33331,
-      "ah1_alg": "FNV132",
+      "ah1_alg": "FNV",
     }
 
 If CEA allows two-way confirmation for the given UH1 and it has an AH1 associated with the UH1 value, 
@@ -388,7 +399,7 @@ If the REA receives an OK, it may continue by sending an HTTP POST to the CEA at
       "uh2_alg": "Murmur3",
       "created": "20230102T12:59:00Z",
       "ah1_u32": 33331,
-      "ah1_alg": "FNV132",
+      "ah1_alg": "FNV",
       "ah2_u32": 55556,
       "ah2_alg": "Murmur3",
     }
@@ -418,7 +429,7 @@ the form (see (#json_vocabulary)):
     {
       "version": 1,
       "uh1_u32": 11112,
-      "uh1_alg": "FNV132",
+      "uh1_alg": "FNV",
       "created": "20230102T12:59:00Z",
       "ah3_base64": "b6fb35773416f37e51eb893a0b0682e23b4f758d5004542450be61607253f899",
       "ah3_alg": "SHA-256",
@@ -439,22 +450,56 @@ However, the protocol supports multiple messages of various types. Each type is 
 
 This document defines the following "simple" message types.
 
-* `json_text` - the message content is a JSON compatible string.
-* `email` - the message content is an RFC 6530 compliant email address.
-* `web` - the message content is an RFC 3982 URL of a resource intended to be used with a web browser.
+* `json_text` - the `msg_content` is a JSON compatible string.
+* `email` - the `msg_content` is a JSON string containing an RFC 6530 compliant email address.
+* `web` - the `msg_content` is a JSON string containing an RFC 3982 URL of a resource intended to be used with a web browser.
+* `profile` - the `msg_content` is a JSON string containing an RFC 3982 URL that resolves to a message set (see (#message_sets)).
 
 ### Cryptographic Message Types
 
-If the message type is `pem_pubkey`, the message content is an RFC 1422 PEM encoded RFC 5280 public key.
-As the message content is carried inside a JSON string, the newlines are to be escaped.
+If the message type is `pem_pubkey`, the `msg_content` is an array of JSON strings containing an RFC 1422 PEM encoded RFC 5280 public key.
+Each string of the array represents a "line" of text of the PEM structure.
 
-If the message type is `pem_cms`, the message content is an RFC 1422 PEM encoded CMS (RFC 5280). The
-newlines are to be escaped.
+    "msg_type": "pem_pubkey",
+    "msg_content": [
+      "-----BEGIN PUBLIC KEY-----",
+      "MIIBCgKCAQEA1e8xKwbqeUNyCKMjsiGhIAgQ8KG6dHBmt10QcDszctb64Fb5lju",
+      "rNwzOJ4ue4cbXRfD66ZvWzBHXsJmJCk5qkLEcdbZZ4zGz2N4wf7GxIiJXSfviH+",
+      "3tt2Fd+/YcqGsyTZtjYyvcE6b1eighG8JKl15c7tq9lSFxz0PvshNEWXXEhML8n",
+      "wDqIRnPqKIw4v3dDFd4rqzVNGKhMQ0DaKplmbRRLavdrsgBOZhhyanZEQKBL3/8",
+      "+3rQ7vMSc7/3FBUIncu5rvFgoT10Pv4KDDjv3UMXeC669RNmOjgJQQ0Y2o1k1h2",
+      "56meaojisqZ59Fr2YQYqg24F3Tzu5yKLgIDAQAB",
+      ""-----END RSA PUBLIC KEY-----"
+    ]
 
-If the message type is `self_pem_cms`, the message content is the same as `pem_cms`, however the key material
+If the message type is `pem_cms`, the `msg_content` is an array of JSON strings containing an RFC 1422 PEM encoded CMS (RFC 5280) object
+in the form described above.
+
+If the message type is `self_pem_cms`, the `msg_content` is an array of JSON strings of the same type as `pem_cms`, however the key material
 used for the CMS is either the UID or AID, or known to be associated with the UID or AID (such as key id).
 
 A> TODO: This needs some more work, obviously.
+
+## Message Sets {#message_sets}
+
+A set of messages can be grouped together for access using the following form:
+
+    {
+      "version": 1,
+      "msgs" : [
+        {
+          "msg_type": "email",
+          "msg_content": "bobthebob@example.net"
+        },
+        {
+          "msg_type": "web",
+          "msg_content": "https://example.com/blog/bob"
+        }
+      ]
+    }
+
+Howdy defines no URL pattern for access to message sets, however Exchange Agents MAY
+make them publicly accessible based on permissions from a User Agent (e.g. https://example.com/profile/bob).
 
 ## Distribution {#distribution}
 
@@ -501,13 +546,13 @@ have the following form (see (#json_vocabulary)):
       "hash_values": [
         {
           "uh1_u32": 11112,
-          "alg": "FNV132",
+          "alg": "FNV",
           "two_way": false,
           "created": "20230102T12:59:00Z"
         },
         {
           "uh1_u32": 22221,
-          "alg": "FNV132",
+          "alg": "FNV",
           "two-way": true,
           "created": "20230101T12:59:00Z"
         },
@@ -532,7 +577,7 @@ is the same is used in (#distribution).
 Identifiers of users are not generally secrets and are sometimes very well known.
 This invites a type of attack where an Exchange Agent may purposefully be populated
 with hashes of well-known identifiers for the purposes of attracting victims. For
-HDYD, this is especially easy to accomplish with one-way confirmation. User Agents
+Howdy, this is especially easy to accomplish with one-way confirmation. User Agents
 MUST inform users to take additional measures of confirmation using out-of-band
 communications if possible.
 
@@ -541,25 +586,58 @@ communications if possible.
 
 # Other Environments {#other_environments}
 
-This document describes how HDYD works over the Internet by layering it over
-HTTP. However, there may be other environments where parts of HDYD can be used
+## Fediverse
+
+This document describes how Howdy works over the Internet by layering it over
+HTTP. However, there may be other environments where parts of Howdy can be used
 to achieve similar purposes. For example, the Activity Pub protocol and the
 conventions established around the Fediverse provide enough properties to
-to layer HDYD in Activity Pub itself, making the integration of HDYD more
+to layer Howdy in Activity Pub itself, making the integration of Howdy more
 seemless with that ecosystem.
 
+## NOSTR
+
 NOSTR is another environment similar to the Fediverse but with different goals.
-NOSTR uses cryptographic public keys as user identifiers. HDYD could be used
+NOSTR uses cryptographic public keys as user identifiers. Howdy could be used
 in NOSTR to map NOSTR public keys to email addresses and other user identifiers,
 including other NOSTR public keys.
-Additionally, a binding of HDYD to the NOSTR protocol could make exchange of
+Additionally, a binding of Howdy to the NOSTR protocol could make exchange of
 user identifiers more seamless in that environment.
 
-Other environments, such as local area networks, may take parts of HDYD and
+## LANS
+
+Other environments, such as local area networks, may take parts of Howdy and
 use them with mDNS or Bluetooth to facilitate the discovery of Exchange Agents.
 This scenario being that a user with a smart phone containing both a User Agent 
-and Exchange Agent may be notified that an acquaintance is physically nearby using HDYD.
+and Exchange Agent may be notified that an acquaintance is physically nearby using Howdy.
+
+## MIMI
+
+The IETF's More Instant Messaging Interoperability (MIMI) working group is
+defining protocols for the interchange of instant messages across protocol boundaries.
+Howdy could be used for the discovery of identifiers and mapping of identifiers
+between the varous instant messaging systems.
 
 # Acknowledgements
 
-A conversation had with libations and Eric Osterweil was the inspiration for HDYD.
+A conversation had with libations and Eric Osterweil was the inspiration for Howdy.
+
+<reference anchor="Murmur3" target="https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp">
+  <front>
+    <title>Murmur Hash 3</title>
+    <author fullname="Austin Appleby">
+    </author>
+  </front>
+</reference>
+
+<reference anchor="Bloom">
+  <front>
+    <title>Space/time trade-offs in hash coding with allowable errors.</title>
+    <author fullname="Burton H. Bloom">
+    </author>
+    <date year="1970"/>
+  </front>
+  <seriesInfo name="Communications of the ACM" value="ACM 13"/>
+</reference>
+
+
