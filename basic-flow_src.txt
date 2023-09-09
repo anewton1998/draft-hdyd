@@ -1,0 +1,24 @@
+# pylover.github.io/adia
+
+diagram: Basic Flow
+author: Andy Newton
+version: 00
+
+sequence: 1. Provision Hashses
+cua.title: CUA
+cea.title: CEA
+rea.title: REA
+rua.title: RUA
+
+cua -> cea: hashes
+rua -> rea: hashes
+@cea: Publishes UH1s
+
+
+sequence: 2. Confirmation
+cea.title: CEA
+rea.title: REA
+
+
+@rea ~ cea: confirmation
+rea -> cea

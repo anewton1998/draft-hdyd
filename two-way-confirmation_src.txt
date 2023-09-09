@@ -1,0 +1,22 @@
+# pylover.github.io/adia
+
+diagram: Two Way Confirmation
+author: Andy Newton
+version: 00
+
+sequence: Two-Way Confirmation
+cea.title: CEA
+rea.title: REA
+
+rea -> cea: step 1: UH1 + AH1 => step 2: OK
+rea -> cea: step 3: UH2 + UH2 => step 4: UH3 + AH3 + msg_for_AID
+rea -> cea: step 5: AH3 + msg_for_UID => OK
+
+sequence: Message to Users
+rea.title: REA
+rua.title: RUA
+cea.title: CEA
+cua.title: CUA
+
+rea -> rua: msg_for_AID
+cea -> cua: msg_for_UID
