@@ -1,5 +1,5 @@
 %%%
-Title = "How Do You Do"
+Title = "Howdy: The How Do You Do Protocol"
 area = "Applications and Real-Time Area (ART)"
 workgroup = "Network Working Group"
 abbrev = "howdy"
