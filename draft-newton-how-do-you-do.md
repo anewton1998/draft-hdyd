@@ -357,26 +357,30 @@ The messages described in the following section contain JSON. The meaning of the
 are:
 
 * `version` - this is a simple integer and MUST be 1.
-* `next` - a string value which maybe used in subsequent requests as the `next` query parameter.
-* `prev` - a string value which maybe used in subsequent requests as the `prev` query parameter.
+* paging values:
+  * `next` - a string value which maybe used in subsequent requests as the `next` query parameter.
+  * `prev` - a string value which maybe used in subsequent requests as the `prev` query parameter.
 * `hash_values` - an array of JSON objects, each containing hashes.
 * `two_way` - indicates that confirmation of an identifier requires the two-way process.
 * `created` - an RFC 3339 data and time in UTC with no more than seconds resolution indicating when an associated item was placed in the Exchange Agent.
-* `uh1_u32` - an unsigned 32-bit integer that is a UH1.
-* `uh1_alg` - the name of the hash algorithm used to generate UH1.
-* `uh2_u32` - an unsigned 32-bit integer that is a UH2.
-* `uh2_alg` - the name of the hash algorithm used to generate UH2.
-* `uh3_base64` - a Base64 string containing a UH3.
-* `uh3_alg` - the name of the hash algorithm used to generate UH3.
-* `ah1_u32` - an unsigned 32-bit integer that is a AH1.
-* `ah1_alg` - the name of the hash algorithm used to generate AH1.
-* `ah2_u32` - an unsigned 32-bit integer that is a AH2.
-* `ah2_alg` - the name of the hash algorithm used to generate AH2.
-* `ah3_base64` - a Base64 string containing a AH3.
-* `ah3_alg` - the name of the hash algorithm used to generate AH3.
-* `msgs` - an array containing message objects.
-* `msg_type` - a string signifying the type of the message content.
-* `msg_content` - the JSON type of this value is dependent on the accompanying `msg_type` value.
+* UID related values:
+  * `uh1_u32` - an unsigned 32-bit integer that is a UH1.
+  * `uh1_alg` - the name of the hash algorithm used to generate UH1.
+  * `uh2_u32` - an unsigned 32-bit integer that is a UH2.
+  * `uh2_alg` - the name of the hash algorithm used to generate UH2.
+  * `uh3_base64` - a Base64 string containing a UH3.
+  * `uh3_alg` - the name of the hash algorithm used to generate UH3.
+* AID related values:
+  * `ah1_u32` - an unsigned 32-bit integer that is a AH1.
+  * `ah1_alg` - the name of the hash algorithm used to generate AH1.
+  * `ah2_u32` - an unsigned 32-bit integer that is a AH2.
+  * `ah2_alg` - the name of the hash algorithm used to generate AH2.
+  * `ah3_base64` - a Base64 string containing a AH3.
+  * `ah3_alg` - the name of the hash algorithm used to generate AH3.
+* message values:
+  * `msgs` - an array containing message objects.
+  * `msg_type` - a string signifying the type of the message content.
+  * `msg_content` - the JSON type of this value is dependent on the accompanying `msg_type` value.
 * `exchange_agents` - an array containg exchange agent location objects.
 * `agent_url` - a string containing a URL of an agent.
 * `notifications_accepted` - a boolean indicating if an Exchange Agent accepts notifications.
@@ -554,9 +558,9 @@ However, the protocol supports multiple messages of various types. Each type is 
 This document defines the following "simple" message types.
 
 * `json_text` - the `msg_content` is a JSON compatible string.
-* `email` - the `msg_content` is a JSON string containing an [!@RFC6530] compliant email address.
-* `web` - the `msg_content` is a JSON string containing an [!@RFC3982] URL of a resource intended to be used with a web browser.
-* `profile` - the `msg_content` is a JSON string containing an [!@RFC3982] URL that resolves to a message set (see (#message_sets)).
+* `email` - the `msg_content` is a JSON string containing an [@!RFC6530] compliant email address.
+* `web` - the `msg_content` is a JSON string containing an [@!RFC3982] URL of a resource intended to be used with a web browser.
+* `profile` - the `msg_content` is a JSON string containing an [@!RFC3982] URL that resolves to a message set (see (#message_sets)).
 
 ### Cryptographic Message Types
 
