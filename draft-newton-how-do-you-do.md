@@ -383,7 +383,10 @@ are:
 
 A> TODO: specify an IANA registry of algorithms to use.
 
-## Requesting Values {#values_request}
+## Publication {#values_request}
+
+Publication is accomplished using a mechanism to allow REAs to collect pages of UH1s from CEAs.
+A push based mechanism is also defined in (#notifications).
 
 An Exchange Agent may request UH1 values from another agent using the `/hashes` path
 (i.e. <base URL>/hashes). This request may optionally have the `next` and `prev`
@@ -551,9 +554,9 @@ However, the protocol supports multiple messages of various types. Each type is 
 This document defines the following "simple" message types.
 
 * `json_text` - the `msg_content` is a JSON compatible string.
-* `email` - the `msg_content` is a JSON string containing an RFC 6530 compliant email address.
-* `web` - the `msg_content` is a JSON string containing an RFC 3982 URL of a resource intended to be used with a web browser.
-* `profile` - the `msg_content` is a JSON string containing an RFC 3982 URL that resolves to a message set (see (#message_sets)).
+* `email` - the `msg_content` is a JSON string containing an [!@RFC6530] compliant email address.
+* `web` - the `msg_content` is a JSON string containing an [!@RFC3982] URL of a resource intended to be used with a web browser.
+* `profile` - the `msg_content` is a JSON string containing an [!@RFC3982] URL that resolves to a message set (see (#message_sets)).
 
 ### Cryptographic Message Types
 
