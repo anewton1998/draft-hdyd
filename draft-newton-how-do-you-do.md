@@ -704,6 +704,24 @@ is the same is used in (#distribution).
 
 # Security Considerations
 
+## All Bits Set
+
+The bit set defined in (#values_request) can be manipulated to allow an exchange agent
+to be an attractive nuisance by simply setting all the bits. REAs SHOULD limit contact
+to CEAs with every bit set. Likewise, REAs SHOULD limit contact with CEAs which yield
+a large number of
+false positive matches, where a false positive match is a failed identifier confirmation.
+
+## Shallow Bit Set
+
+The bit set discussed in (#values_request) creates only one flag per UID, created from
+the UH1 value. Experimentation, implementation, and experience may require additional bits
+to set for each UID to prevent an abundance of false positives. It may be necessary to
+encorporate the modulo of the UH2 value into the bit set, thus providing more than one
+bit indicating the possible knowledge of a UID.
+
+## Well Known Identifiers
+
 Identifiers of users are not generally secrets and are sometimes very well known.
 This invites a type of attack where an Exchange Agent may purposefully be populated
 with hashes of well-known identifiers for the purposes of attracting victims. For
@@ -711,6 +729,13 @@ Howdy, this is especially easy to accomplish with one-way confirmation. User Age
 MUST inform users to take additional measures of confirmation using out-of-band
 communications if possible.
 
+## Strengthened Acknowledgement
+
+In the confirmation flows, the exchange of the UH2/AH2 values and then the UH3/AH3 values
+makes both exchange agents express association with the UID/AID. Without this double exchange,
+the CEA can falsely profess to association with a UID.  However, the hash algorithm used
+for UH2/AH2 may need to be strengthened. Experimentation, implementation, and experience
+may determine this need.
 
 {backmatter}
 
@@ -748,23 +773,6 @@ defining protocols for the interchange of instant messages across protocol bound
 Howdy could be used for the discovery of identifiers and mapping of identifiers
 between the varous instant messaging systems.
 
-# Design Issues
-
-## Shallow Bit Set
-
-The bit set discussed in (#values_request) creates only one flag per UID, created from
-the UH1 value. Experimentation, implementation, and experience may require additional bits
-to set for each UID to prevent an abundance of false positives. It may be necessary to
-encorporate the modulo of the UH2 value into the bit set, thus providing more than one
-bit indicating the possible knowledge of a UID.
-
-## Strengthened Acknowledgement
-
-In the confirmation flows, the exchange of the UH2/AH2 values and then the UH3/AH3 values
-makes both exchange agents express association with the UID/AID. Without this double exchange,
-the CEA can falsely profess to association with a UID.  However, the hash algorithm used
-for UH2/AH2 may need to be strengthened. Experimentation, implementation, and experience
-may determine this need.
 
 # Acknowledgements
 
