@@ -748,6 +748,24 @@ defining protocols for the interchange of instant messages across protocol bound
 Howdy could be used for the discovery of identifiers and mapping of identifiers
 between the varous instant messaging systems.
 
+# Design Issues
+
+## Shallow Bit Set
+
+The bit set discussed in (#values_request) creates only one flag per UID, created from
+the UH1 value. Experimentation, implementation, and experience may require additional bits
+to set for each UID to prevent an abundance of false positives. It may be necessary to
+encorporate the modulo of the UH2 value into the bit set, thus providing more than one
+bit indicating the possible knowledge of a UID.
+
+## Strengthened Acknowledgement
+
+In the confirmation flows, the exchange of the UH2/AH2 values and then the UH3/AH3 values
+makes both exchange agents express association with the UID/AID. Without this double exchange,
+the CEA can falsely profess to association with a UID.  However, the hash algorithm used
+for UH2/AH2 may need to be strengthened. Experimentation, implementation, and experience
+may determine this need.
+
 # Acknowledgements
 
 A conversation had with libations and Eric Osterweil was the inspiration for Howdy.
