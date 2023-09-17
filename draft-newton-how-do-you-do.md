@@ -83,7 +83,7 @@ different hash values and/or stronger hash algorithms.
 # Functional Components
 
 The agents holding the hash values and conducting identifier confirmation
-communications are known as Exchange Agents (EA) in Howdy. Users interact with
+communications are known as Exchange Agents (EA). Users interact with
 User Agents (UA). User Agents hold the identifiers of the user and the identifiers
 being sought by the user, and User Agents calculate the hash values for
 identifiers which are then placed into Exchange Agents.
@@ -393,7 +393,7 @@ A> TODO: specify an IANA registry of algorithms to use.
 
 ## Publication {#values_request}
 
-Publication occurs by first querying for a bit set, which is space-efficient, probabilistic
+Publication occurs by first querying for a bit set, which is a space-efficient 
 set of flags indicating if an Exchange Agent has probable knowledge of specific hash values. This is
 done by sending an HTTP GET to the `/bitset` path (i.e. <base URL>/bitset). This query returns JSON
 of the form:
@@ -725,8 +725,8 @@ bit indicating the possible knowledge of a UID.
 Identifiers of users are not generally secrets and are sometimes very well known.
 This invites a type of attack where an Exchange Agent may purposefully be populated
 with hashes of well-known identifiers for the purposes of attracting victims. For
-Howdy, this is especially easy to accomplish with one-way confirmation. User Agents
-MUST inform users to take additional measures of confirmation using out-of-band
+Howdy, this is especially easy to accomplish with one-way confirmation. When using one-way confirmation,
+User Agents MUST inform users to take additional measures of confirmation using out-of-band
 communications if possible.
 
 ## Strengthened Acknowledgement
@@ -773,6 +773,25 @@ defining protocols for the interchange of instant messages across protocol bound
 Howdy could be used for the discovery of identifiers and mapping of identifiers
 between the varous instant messaging systems.
 
+# Design Issues
+
+## Murmur and Known Salts
+
+Notes on the Murmu3 algorithm suggest that it is fast, but produces different results
+depending on CPU architecture. If true, this algorithm would present significant interoperability
+issues and could not be used.
+
+Instead of using multiple algorithms, another approach might be to use
+"known salts" (salts are typically random), which are appended to identifiers before hashing.
+Such a scheme might be that all agents create hashes with a large, predefined set of known salts
+but only use a small set during confirmation.
+
+## JOSE
+
+More effort needs to be given towards the use of JOSE standards. The PEM based approach was selected
+because it is well-known but also that canonicalization is unnecessary when hashing public keys.
+Being able to use a public key as an identifier that is then used to sign a message seems particularly
+useful.
 
 # Acknowledgements
 
